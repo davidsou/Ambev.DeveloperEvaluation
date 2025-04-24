@@ -16,21 +16,10 @@ namespace Ambev.DeveloperEvaluation.WebApi.Features.Users;
 /// </summary>
 [ApiController]
 [Route("api/[controller]")]
-public class UsersController : BaseController
-{
-    private readonly IMediator _mediator;
-    private readonly IMapper _mapper;
+public class UsersController(IMediator mediator, IMapper mapper) : BaseController(mediator)
+{    
+    private readonly IMapper _mapper = mapper;
 
-    /// <summary>
-    /// Initializes a new instance of UsersController
-    /// </summary>
-    /// <param name="mediator">The mediator instance</param>
-    /// <param name="mapper">The AutoMapper instance</param>
-    public UsersController(IMediator mediator, IMapper mapper)
-    {
-        _mediator = mediator;
-        _mapper = mapper;
-    }
 
     /// <summary>
     /// Creates a new user

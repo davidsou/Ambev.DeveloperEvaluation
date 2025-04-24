@@ -12,21 +12,10 @@ namespace Ambev.DeveloperEvaluation.WebApi.Features.Auth;
 /// </summary>
 [ApiController]
 [Route("api/[controller]")]
-public class AuthController : BaseController
+public class AuthController(IMediator mediator, IMapper mapper ) : BaseController(mediator)
 {
-    private readonly IMediator _mediator;
-    private readonly IMapper _mapper;
 
-    /// <summary>
-    /// Initializes a new instance of AuthController
-    /// </summary>
-    /// <param name="mediator">The mediator instance</param>
-    /// <param name="mapper">The AutoMapper instance</param>
-    public AuthController(IMediator mediator, IMapper mapper)
-    {
-        _mediator = mediator;
-        _mapper = mapper;
-    }
+
 
     /// <summary>
     /// Authenticates a user with their credentials
@@ -46,14 +35,14 @@ public class AuthController : BaseController
         if (!validationResult.IsValid)
             return BadRequest(validationResult.Errors);
 
-        var command = _mapper.Map<AuthenticateUserCommand>(request);
+        var command = mapper.Map<AuthenticateUserCommand>(request);
         var response = await _mediator.Send(command, cancellationToken);
 
         return Ok(new ApiResponseWithData<AuthenticateUserResponse>
         {
             Success = true,
             Message = "User authenticated successfully",
-            Data = _mapper.Map<AuthenticateUserResponse>(response)
+            Data = mapper.Map<AuthenticateUserResponse>(response)
         });
     }
 }

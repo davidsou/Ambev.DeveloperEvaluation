@@ -1,11 +1,13 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Ambev.DeveloperEvaluation.Domain.Common;
+using MediatR;
+using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 
 namespace Ambev.DeveloperEvaluation.WebApi.Common;
 
 [Route("api/[controller]")]
 [ApiController]
-public class BaseController : ControllerBase
+public class BaseController(IMediator mediator) : ControllerBase
 {
     protected int GetCurrentUserId() =>
             int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? throw new NullReferenceException());
@@ -34,4 +36,26 @@ public class BaseController : ControllerBase
                 TotalCount = pagedList.TotalCount,
                 Success = true
             });
+
+    protected IActionResult FromResult<T>(OperationResult<T> result)
+    {
+        if (result is null)
+            return NoContent();
+
+        return result.IsSuccess
+            ? Ok(new { result.Value, message = result.Message })
+            : BadRequest(new { error = result.Errors });
+    }
+
+    protected IActionResult FromResult(OperationResult result)
+    {
+        if (result is null)
+            return NoContent();
+
+        return result.IsSuccess
+            ? Ok(new { message = result.Message })
+            : BadRequest(new { error = result.Errors });
+    }
+
+    protected IMediator _mediator => mediator;
 }
