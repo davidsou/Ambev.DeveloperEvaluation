@@ -1,17 +1,16 @@
 ﻿using Ambev.DeveloperEvaluation.Domain.Common;
-using MediatR;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore;
 using System.Reflection;
 using Ambev.DeveloperEvaluation.Domain.Entities;
 using Ambev.DeveloperEvaluation.ORM.Mapping;
-using Ambev.DeveloperEvaluation.Common.Security;
 
 namespace Ambev.DeveloperEvaluation.ORM.Context;
 
-public class SqlContext(DbContextOptions<SqlContext> options, IUser currentUser) : DbContext(options)
+public class SqlContext(DbContextOptions<SqlContext> options) : DbContext(options)
 {
     public DbSet<User> Users { get; set; }
+    public DbSet<Product> Products { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
@@ -26,6 +25,7 @@ public class SqlContext(DbContextOptions<SqlContext> options, IUser currentUser)
         base.OnModelCreating(modelBuilder);
         modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
         modelBuilder.ApplyConfiguration(new UserConfiguration());
+        modelBuilder.ApplyConfiguration(new ProductConfiguration());
     }
 
     public override int SaveChanges()
@@ -35,11 +35,11 @@ public class SqlContext(DbContextOptions<SqlContext> options, IUser currentUser)
             {
                 case EntityState.Added:
                     entry.Entity.CreatedAt = DateTime.UtcNow;
-                    entry.Entity.CreatedBy = currentUser.Id;
+             //       entry.Entity.CreatedBy = currentUser.Id;
                     break;
                 case EntityState.Modified:
                     entry.Entity.ChangedAt = DateTime.UtcNow;
-                    entry.Entity.ChangedBy = currentUser.Id;
+            //        entry.Entity.ChangedBy = currentUser.Id;
 
                     break;
             }
@@ -54,12 +54,12 @@ public class SqlContext(DbContextOptions<SqlContext> options, IUser currentUser)
             {
                 case EntityState.Added:
                     entry.Entity.CreatedAt = DateTime.UtcNow;
-                    entry.Entity.CreatedBy = currentUser.Id;
+         //           entry.Entity.CreatedBy = currentUser.Id;
 
                     break;
                 case EntityState.Modified:
                     entry.Entity.ChangedAt = DateTime.UtcNow;
-                    entry.Entity.ChangedBy = currentUser.Id;
+         //           entry.Entity.ChangedBy = currentUser.Id;
                     break;
             }
 

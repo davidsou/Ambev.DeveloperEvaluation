@@ -2,9 +2,11 @@ using Ambev.DeveloperEvaluation.Application;
 using Ambev.DeveloperEvaluation.Common.HealthChecks;
 using Ambev.DeveloperEvaluation.Common.Logging;
 using Ambev.DeveloperEvaluation.Common.Security;
+using Ambev.DeveloperEvaluation.Common.Settings;
 using Ambev.DeveloperEvaluation.Common.Validation;
 using Ambev.DeveloperEvaluation.IoC;
 using Ambev.DeveloperEvaluation.ORM;
+using Ambev.DeveloperEvaluation.ORM.Context;
 using Ambev.DeveloperEvaluation.WebApi.Middleware;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -20,28 +22,68 @@ public class Program
         {
             Log.Information("Starting web application");
 
-            WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
+            var builder = WebApplication.CreateBuilder(args);
             builder.AddDefaultLogging();
 
+            // Load configuration, including connection strings
+            var configuration = builder.Configuration;
+
+            // Register services
             builder.Services.AddControllers();
             builder.Services.AddEndpointsApiExplorer();
-
             builder.AddBasicHealthChecks();
-            builder.Services.AddSwaggerGen();
+            builder.Services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo { Title = "Ambev API", Version = "v1" });
 
-            builder.Services.AddDbContext<DefaultContext>(options =>
-                options.UseNpgsql(
-                    builder.Configuration.GetConnectionString("DefaultConnection"),
-                    b => b.MigrationsAssembly("Ambev.DeveloperEvaluation.ORM")
+                // Adiciona definição do esquema de segurança JWT
+                var securityScheme = new Microsoft.OpenApi.Models.OpenApiSecurityScheme
+                {
+                    Name = "Authorization",
+                    Type = Microsoft.OpenApi.Models.SecuritySchemeType.Http,
+                    Scheme = "bearer",
+                    BearerFormat = "JWT",
+                    In = Microsoft.OpenApi.Models.ParameterLocation.Header,
+                    Description = "Insira o token JWT como: Bearer {seu token}"
+                };
+
+                c.AddSecurityDefinition("Bearer", securityScheme);
+
+                // Requer token por padrão em todos os endpoints (exceto AllowAnonymous)
+                var securityRequirement = new Microsoft.OpenApi.Models.OpenApiSecurityRequirement
+    {
+        {
+            securityScheme,
+            new string[] {}
+        }
+    };
+
+                c.AddSecurityRequirement(securityRequirement);
+
+                // Se você usa XML comments para documentação:
+                // var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+                // var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+                // c.IncludeXmlComments(xmlPath);
+            });
+
+            // Configure Database (PostgreSQL)
+            builder.Services.AddDbContext<SqlContext>(options =>
+              options.UseNpgsql(
+                configuration.GetConnectionString("DefaultConnection"),
+                b => b.MigrationsAssembly("Ambev.DeveloperEvaluation.ORM")
                 )
             );
 
-            builder.Services.AddJwtAuthentication(builder.Configuration);
 
+            // Configure JWT Authentication with strongly-typed settings
+            builder.Services.Configure<JwtSettings>(configuration.GetSection("JwtSettings"));
+            builder.Services.AddJwtAuthentication(configuration);
+
+            // Dependency Injection and AutoMapper
             builder.RegisterDependencies();
-
             builder.Services.AddAutoMapper(typeof(Program).Assembly, typeof(ApplicationLayer).Assembly);
 
+            // MediatR and Pipeline Behaviors
             builder.Services.AddMediatR(cfg =>
             {
                 cfg.RegisterServicesFromAssemblies(
@@ -53,6 +95,15 @@ public class Program
             builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
 
             var app = builder.Build();
+
+            using (var scope = app.Services.CreateScope())
+            {
+                var services = scope.ServiceProvider;
+                var sqlContext = services.GetRequiredService<SqlContext>();
+                sqlContext.Database.Migrate();
+            }
+
+            // Middlewares
             app.UseMiddleware<ValidationExceptionMiddleware>();
 
             if (app.Environment.IsDevelopment())
@@ -61,7 +112,8 @@ public class Program
                 app.UseSwaggerUI();
             }
 
-            app.UseHttpsRedirection();
+            // Comment this if you want to disable HTTPS in Docker
+            // app.UseHttpsRedirection();
 
             app.UseAuthentication();
             app.UseAuthorization();
@@ -70,6 +122,7 @@ public class Program
 
             app.MapControllers();
 
+            // Start application
             app.Run();
         }
         catch (Exception ex)
@@ -82,3 +135,5 @@ public class Program
         }
     }
 }
+
+

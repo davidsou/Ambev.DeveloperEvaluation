@@ -1,5 +1,6 @@
 ﻿using Ambev.DeveloperEvaluation.Domain.Entities;
 using Ambev.DeveloperEvaluation.Domain.Repositories;
+using Ambev.DeveloperEvaluation.ORM.Context;
 using Microsoft.EntityFrameworkCore;
 
 namespace Ambev.DeveloperEvaluation.ORM.Repositories;
@@ -9,13 +10,13 @@ namespace Ambev.DeveloperEvaluation.ORM.Repositories;
 /// </summary>
 public class UserRepository : IUserRepository
 {
-    private readonly DefaultContext _context;
+    private readonly SqlContext _context;
 
     /// <summary>
     /// Initializes a new instance of UserRepository
     /// </summary>
     /// <param name="context">The database context</param>
-    public UserRepository(DefaultContext context)
+    public UserRepository(SqlContext context)
     {
         _context = context;
     }
