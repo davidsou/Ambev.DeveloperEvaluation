@@ -22,7 +22,7 @@ public class GetAllProducts
         {
             return await TryCatchAsync(async () =>
             {
-                var list = await _repository.GetAllAsync();
+                var list = await _repository.GetAllWithRatingsAsync();
                 var dtos = mapper.Map<List<ProductDto>>(list);
                 return OperationResult<List<ProductDto>>.Success(dtos);
             }, "List products");

@@ -12,5 +12,10 @@ public class ProductRatingConfiguration : IEntityTypeConfiguration<ProductRating
         builder.Property(x => x.Id).HasColumnType("uuid").HasDefaultValueSql("gen_random_uuid()");
         builder.HasIndex(x => x.ProductId );
         builder.HasIndex(x => new { x.ProductId, x.Id});
+
+        builder.HasOne(r => r.Product)
+          .WithMany(p => p.Ratings)
+          .HasForeignKey(r => r.ProductId)
+          .OnDelete(DeleteBehavior.Cascade);
     }
 }

@@ -12,6 +12,8 @@ public class SqlContext(DbContextOptions<SqlContext> options) : DbContext(option
     public DbSet<User> Users { get; set; }
     public DbSet<Product> Products { get; set; }
 
+    public DbSet<ProductRating> ProductRatings { get; set; }
+
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
         base.OnConfiguring(optionsBuilder);
@@ -26,6 +28,8 @@ public class SqlContext(DbContextOptions<SqlContext> options) : DbContext(option
         modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
         modelBuilder.ApplyConfiguration(new UserConfiguration());
         modelBuilder.ApplyConfiguration(new ProductConfiguration());
+        modelBuilder.ApplyConfiguration(new ProductRatingConfiguration());
+
     }
 
     public override int SaveChanges()

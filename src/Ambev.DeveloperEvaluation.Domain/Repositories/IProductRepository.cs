@@ -4,4 +4,5 @@ namespace Ambev.DeveloperEvaluation.Domain.Repositories;
 
 public interface IProductRepository:ISqlBaseRepository<Product>
 {
+    Task<IEnumerable<Product>> GetAllWithRatingsAsync();
 }

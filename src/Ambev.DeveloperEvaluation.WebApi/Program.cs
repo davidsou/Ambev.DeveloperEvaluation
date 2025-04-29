@@ -109,7 +109,6 @@ public class Program
                 sqlContext.Database.Migrate();
 
                 await ProductSeeder.SeedAsync(services);
-
             }
 
             // Middlewares

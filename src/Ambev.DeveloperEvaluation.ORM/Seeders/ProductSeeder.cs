@@ -16,6 +16,7 @@ public static class ProductSeeder
         if (context.Products.Any())
         {
             logger.LogInformation("Products already exist. Skipping seeding.");
+            await ProductRatingSeeder.SeedProductRatingsAsync(context, logger);
             return;
         }
 
@@ -167,6 +168,9 @@ public static class ProductSeeder
 
         context.Products.AddRange(products);
         await context.SaveChangesAsync();
+        await ProductRatingSeeder.SeedProductRatingsAsync(context, logger);
+
+
 
         logger.LogInformation("Products seeded successfully.");
     }
