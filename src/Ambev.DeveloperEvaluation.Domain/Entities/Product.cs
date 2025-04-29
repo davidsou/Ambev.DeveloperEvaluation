@@ -10,7 +10,7 @@ public class Product:BaseEntity
     public string Image { get; set; } = string.Empty;
 
     // Propriedade de navegação
-    public virtual ICollection<ProductRating> Ratings { get; set; }
+    public virtual ICollection<ProductRating> Ratings { get; set; } = [];
 
     // Propriedades agregadas
     public double AverageRating => Ratings?.Count > 0 ? Ratings.Average(r => r.Rate) : 0.0;

@@ -36,7 +36,7 @@ public class AuthController(IMediator mediator, IMapper mapper ) : BaseControlle
             return BadRequest(validationResult.Errors);
 
         var command = mapper.Map<AuthenticateUserCommand>(request);
-        var response = await _mediator.Send(command, cancellationToken);
+        var response = await Mediator.Send(command, cancellationToken);
 
         return Ok(new ApiResponseWithData<AuthenticateUserResponse>
         {

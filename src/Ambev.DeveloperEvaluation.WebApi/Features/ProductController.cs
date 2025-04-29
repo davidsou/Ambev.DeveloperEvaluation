@@ -12,49 +12,49 @@ public class ProductController(IMediator mediator) : BaseController(mediator)
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] CreateProductDto dto)
     {
-        var result = await _mediator.Send(new CreateProduct.Command(dto));
+        var result = await Mediator.Send(new CreateProduct.Command(dto));
         return FromResult(result);
     }
 
     [HttpPut("{id}")]
     public async Task<IActionResult> Update(int id, [FromBody] CreateProductDto dto)
     {
-        var result = await _mediator.Send(new UpdateProduct.Command(id, dto));
+        var result = await Mediator.Send(new UpdateProduct.Command(id, dto));
         return FromResult(result);
     }
 
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(int id)
     {
-        var result = await _mediator.Send(new DeleteProduct.Command(id));
+        var result = await Mediator.Send(new DeleteProduct.Command(id));
         return FromResult(result);
     }
 
     [HttpGet("{id}")]
     public async Task<IActionResult> GetById(int id)
     {
-        var result = await _mediator.Send(new GetProductById.Query(id));
+        var result = await Mediator.Send(new GetProductById.Query(id));
         return FromResult(result);
     }
 
     [HttpGet]
     public async Task<IActionResult> GetAll()
     {
-        var result = await _mediator.Send(new GetAllProducts.Query());
+        var result = await Mediator.Send(new GetAllProducts.Query());
         return FromResult(result);
     }
 
     [HttpGet("paged")]
     public async Task<IActionResult> GetPaged([FromQuery] ProductQueryParams queryParams)
     {
-        var result = await _mediator.Send(new QueryProducts.Query(queryParams));
+        var result = await Mediator.Send(new QueryProducts.Query(queryParams));
         return FromResult(result);
     }
 
     [HttpGet("detailed/{id}")]
     public async Task<IActionResult> GetDetailedById(Guid id)
     {
-        var result = await _mediator.Send(new QueryProductById.Query(id));
+        var result = await Mediator.Send(new QueryProductById.Query(id));
         return FromResult(result);
     }
 }

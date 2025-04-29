@@ -57,5 +57,5 @@ public class BaseController(IMediator mediator) : ControllerBase
             : BadRequest(new { error = result.Errors });
     }
 
-    protected IMediator _mediator => mediator;
+    protected IMediator Mediator => mediator;
 }

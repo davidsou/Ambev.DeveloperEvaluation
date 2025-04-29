@@ -39,7 +39,7 @@ public class UsersController(IMediator mediator, IMapper mapper) : BaseControlle
             return BadRequest(validationResult.Errors);
 
         var command = _mapper.Map<CreateUserCommand>(request);
-        var response = await _mediator.Send(command, cancellationToken);
+        var response = await Mediator.Send(command, cancellationToken);
 
         return Created(string.Empty, new ApiResponseWithData<CreateUserResponse>
         {
@@ -69,7 +69,7 @@ public class UsersController(IMediator mediator, IMapper mapper) : BaseControlle
             return BadRequest(validationResult.Errors);
 
         var command = _mapper.Map<GetUserCommand>(request.Id);
-        var response = await _mediator.Send(command, cancellationToken);
+        var response = await Mediator.Send(command, cancellationToken);
 
         return Ok(new ApiResponseWithData<GetUserResponse>
         {
@@ -99,7 +99,7 @@ public class UsersController(IMediator mediator, IMapper mapper) : BaseControlle
             return BadRequest(validationResult.Errors);
 
         var command = _mapper.Map<DeleteUserCommand>(request.Id);
-        await _mediator.Send(command, cancellationToken);
+        await Mediator.Send(command, cancellationToken);
 
         return Ok(new ApiResponse
         {

@@ -1,7 +1,7 @@
 ﻿namespace Ambev.DeveloperEvaluation.Application.Products.Dtos;
 
 public record ProductDto(
-    int Id,
+    Guid Id,
     string Title,
     decimal Price,
     string Description,

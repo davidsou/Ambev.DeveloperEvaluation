@@ -7,16 +7,18 @@ using Ambev.DeveloperEvaluation.Common.Validation;
 using Ambev.DeveloperEvaluation.IoC;
 using Ambev.DeveloperEvaluation.ORM;
 using Ambev.DeveloperEvaluation.ORM.Context;
+using Ambev.DeveloperEvaluation.ORM.Seeders;
 using Ambev.DeveloperEvaluation.WebApi.Middleware;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
+using StackExchange.Redis;
 
 namespace Ambev.DeveloperEvaluation.WebApi;
 
 public class Program
 {
-    public static void Main(string[] args)
+    public static async Task Main(string[] args)
     {
         try
         {
@@ -54,7 +56,7 @@ public class Program
     {
         {
             securityScheme,
-            new string[] {}
+            Array.Empty<string>()
         }
     };
 
@@ -79,6 +81,10 @@ public class Program
             builder.Services.Configure<JwtSettings>(configuration.GetSection("JwtSettings"));
             builder.Services.AddJwtAuthentication(configuration);
 
+
+            builder.Services.AddSingleton<IConnectionMultiplexer>(sp =>
+            ConnectionMultiplexer.Connect(configuration.GetConnectionString("RedisConnection")));
+
             // Dependency Injection and AutoMapper
             builder.RegisterDependencies();
             builder.Services.AddAutoMapper(typeof(Program).Assembly, typeof(ApplicationLayer).Assembly);
@@ -101,6 +107,9 @@ public class Program
                 var services = scope.ServiceProvider;
                 var sqlContext = services.GetRequiredService<SqlContext>();
                 sqlContext.Database.Migrate();
+
+                await ProductSeeder.SeedAsync(services);
+
             }
 
             // Middlewares
