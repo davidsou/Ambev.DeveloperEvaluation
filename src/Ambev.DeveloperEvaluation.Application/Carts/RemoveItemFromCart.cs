@@ -12,13 +12,12 @@ public class RemoveItemFromCart
     public class Handler(ICartService cartService, ILogger<Handler> logger)
         : BaseHandler(logger), IRequestHandler<Command, OperationResult>
     {
-        private readonly ICartService _cartService = cartService;
 
         public async Task<OperationResult> Handle(Command request, CancellationToken cancellationToken)
         {
             return await TryCatchAsync(async () =>
             {
-                await _cartService.RemoveItemFromCartAsync(request.UserId, request.ProductId);
+                await cartService.RemoveItemFromCartAsync(request.UserId, request.ProductId);
                 return OperationResult.Success("Item removed from cart.");
             }, "Remove item from cart");
         }

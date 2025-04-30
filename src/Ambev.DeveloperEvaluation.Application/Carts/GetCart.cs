@@ -13,13 +13,12 @@ public class GetCart
     public class Handler(ICartService cartService, ILogger<Handler> logger)
         : BaseHandler(logger), IRequestHandler<Query, OperationResult<Cart>>
     {
-        private readonly ICartService _cartService = cartService;
 
         public async Task<OperationResult<Cart>> Handle(Query request, CancellationToken cancellationToken)
         {
             return await TryCatchAsync(async () =>
             {
-                var cart = await _cartService.GetCartAsync(request.UserId);
+                var cart = await cartService.GetCartAsync(request.UserId);
                 if (cart == null)
                     return OperationResult<Cart>.Failure("Cart not found.");
 

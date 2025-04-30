@@ -12,13 +12,12 @@ public class DeleteCart
     public class Handler(ICartService cartService, ILogger<Handler> logger)
         : BaseHandler(logger), IRequestHandler<Command, OperationResult>
     {
-        private readonly ICartService _cartService = cartService;
-
+       
         public async Task<OperationResult> Handle(Command request, CancellationToken cancellationToken)
         {
             return await TryCatchAsync(async () =>
             {
-                await _cartService.DeleteCartAsync(request.UserId);
+                await cartService.DeleteCartAsync(request.UserId);
                 return OperationResult.Success("Cart deleted successfully.");
             }, "Delete cart");
         }

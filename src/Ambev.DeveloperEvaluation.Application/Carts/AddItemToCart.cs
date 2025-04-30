@@ -14,7 +14,6 @@ public class AddItemToCart
     public class Handler(ICartService cartService, ILogger<Handler> logger)
         : BaseHandler(logger), IRequestHandler<Command, OperationResult>
     {
-        private readonly ICartService _cartService = cartService;
 
         public async Task<OperationResult> Handle(Command request, CancellationToken cancellationToken)
         {
@@ -28,7 +27,7 @@ public class AddItemToCart
                     Price = request.Item.Price
                 };
 
-                await _cartService.AddItemToCartAsync(request.UserId, cartItem);
+                await cartService.AddItemToCartAsync(request.UserId, cartItem);
                 return OperationResult.Success("Item added to cart.");
             }, "Add item to cart");
         }

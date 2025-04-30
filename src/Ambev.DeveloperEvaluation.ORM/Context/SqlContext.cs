@@ -11,15 +11,16 @@ public class SqlContext(DbContextOptions<SqlContext> options) : DbContext(option
 {
     public DbSet<User> Users { get; set; }
     public DbSet<Product> Products { get; set; }
-
     public DbSet<ProductRating> ProductRatings { get; set; }
+    public DbSet<Sale> Sales { get; set; }
+    public DbSet<SaleItem> SaleItems { get; set; }
+    public DbSet<Branch> Branches { get; set; }
+
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
         base.OnConfiguring(optionsBuilder);
         //optionsBuilder.UseLazyLoadingProxies();
-
-
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -29,6 +30,9 @@ public class SqlContext(DbContextOptions<SqlContext> options) : DbContext(option
         modelBuilder.ApplyConfiguration(new UserConfiguration());
         modelBuilder.ApplyConfiguration(new ProductConfiguration());
         modelBuilder.ApplyConfiguration(new ProductRatingConfiguration());
+        modelBuilder.ApplyConfiguration(new SaleConfiguration());
+        modelBuilder.ApplyConfiguration(new SaleItemConfiguration());
+        modelBuilder.ApplyConfiguration(new BranchConfiguration());
 
     }
 
