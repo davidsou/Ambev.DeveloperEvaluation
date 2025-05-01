@@ -1,3 +1,4 @@
+using Ambev.DeveloperEvaluation.Common.Settings;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
@@ -12,6 +13,7 @@ namespace Ambev.DeveloperEvaluation.Common.Security;
 public class JwtTokenGenerator : IJwtTokenGenerator
 {
     private readonly IConfiguration _configuration;
+    private readonly JwtSettings _jwtSettings;
 
     /// <summary>
     /// Initializes a new instance of the JWT token generator.
@@ -19,7 +21,8 @@ public class JwtTokenGenerator : IJwtTokenGenerator
     /// <param name="configuration">Application configuration containing the necessary keys for token generation.</param>
     public JwtTokenGenerator(IConfiguration configuration)
     {
-        _configuration = configuration;
+        _jwtSettings = configuration.GetSection("JwtSettings").Get<JwtSettings>()
+                    ?? throw new ArgumentNullException("JwtSettings not found in configuration.");
     }
 
     /// <summary>
@@ -39,19 +42,21 @@ public class JwtTokenGenerator : IJwtTokenGenerator
     public string GenerateToken(IUser user)
     {
         var tokenHandler = new JwtSecurityTokenHandler();
-        var key = Encoding.ASCII.GetBytes(_configuration["Jwt:SecretKey"]);
+        var key = Encoding.ASCII.GetBytes(_jwtSettings.Secret);
 
         var claims = new[]
         {
            new Claim(ClaimTypes.NameIdentifier, user.Id),
            new Claim(ClaimTypes.Name, user.Username),
-           new Claim(ClaimTypes.Role, user.Role)
+           new Claim(ClaimTypes.Role, user.Role.ToLowerInvariant())
        };
 
         var tokenDescriptor = new SecurityTokenDescriptor
         {
             Subject = new ClaimsIdentity(claims),
             Expires = DateTime.UtcNow.AddHours(8),
+            Issuer = _jwtSettings.Issuer,
+            Audience = _jwtSettings.Audience,
             SigningCredentials = new SigningCredentials(
                 new SymmetricSecurityKey(key),
                 SecurityAlgorithms.HmacSha256Signature)

@@ -22,5 +22,6 @@
         /// </summary>
         /// <returns>O papel do usuário como uma string.</returns>
         public string Role { get; }
+
     }
 }
