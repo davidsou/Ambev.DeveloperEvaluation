@@ -1,4 +1,5 @@
 ﻿using Ambev.DeveloperEvaluation.Application.Carts.Services;
+using Ambev.DeveloperEvaluation.Application.Users.Services;
 using Ambev.DeveloperEvaluation.Domain.Common;
 using Ambev.DeveloperEvaluation.Domain.Entities;
 using MediatR;
@@ -8,9 +9,11 @@ namespace Ambev.DeveloperEvaluation.Application.Carts;
 
 public class GetCart
 {
-    public record Query(Guid UserId) : IRequest<OperationResult<Cart>>;
+    public record Query() : IRequest<OperationResult<Cart>>;
 
-    public class Handler(ICartService cartService, ILogger<Handler> logger)
+    public class Handler(ICartService cartService,
+        ICurrentUserService currentUser, 
+        ILogger<Handler> logger)
         : BaseHandler(logger), IRequestHandler<Query, OperationResult<Cart>>
     {
 
@@ -18,7 +21,16 @@ public class GetCart
         {
             return await TryCatchAsync(async () =>
             {
-                var cart = await cartService.GetCartAsync(request.UserId);
+
+                if (!currentUser.IsAuthenticated)
+                {
+                    return OperationResult<Cart>.Failure("User not Authenticated or not found");
+                }
+
+                var userId = new Guid(currentUser.UserId!);
+
+
+                var cart = await cartService.GetCartAsync(userId);
                 if (cart == null)
                     return OperationResult<Cart>.Failure("Cart not found.");
 

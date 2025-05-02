@@ -5,7 +5,7 @@ namespace Ambev.DeveloperEvaluation.Domain.Entities;
 public class Cart:BaseEntity
 {
     public Guid UserId { get; set; }
-    public List<CartItem> CartItems { get; set; }
+    public List<CartItem> CartItems { get; set; }=new List<CartItem>();
     public decimal TotalPrice => CartItems.Sum(item => item.Price * item.Quantity);
 
     public void AddOrUpdateItem(CartItem newItem)

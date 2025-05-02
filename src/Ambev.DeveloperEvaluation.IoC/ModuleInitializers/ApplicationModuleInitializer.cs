@@ -1,5 +1,6 @@
 ﻿using Ambev.DeveloperEvaluation.Application.Carts.Services;
 using Ambev.DeveloperEvaluation.Application.Sales.Services;
+using Ambev.DeveloperEvaluation.Application.Users.Services;
 using Ambev.DeveloperEvaluation.Common.Security;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
@@ -14,5 +15,7 @@ public class ApplicationModuleInitializer : IModuleInitializer
         builder.Services.AddScoped<ICartService, CartService>();
         builder.Services.AddScoped<ICheckoutService, CheckoutService>();
         builder.Services.AddScoped<ISaleService, SaleService>();
+        builder.Services.AddHttpContextAccessor();
+        builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
     }
 }

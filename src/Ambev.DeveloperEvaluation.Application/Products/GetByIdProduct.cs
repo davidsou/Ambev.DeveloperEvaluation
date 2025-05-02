@@ -10,7 +10,7 @@ namespace Ambev.DeveloperEvaluation.Application.Products;
 
 public class GetProductById
 {
-    public record Query(int Id) : IRequest<OperationResult<ProductDto>>;
+    public record Query(Guid Id) : IRequest<OperationResult<ProductDto>>;
 
     public class Handler(IProductRepository repository,
         IMapper mapper,

@@ -11,6 +11,7 @@ using Ambev.DeveloperEvaluation.ORM.Seeders;
 using Ambev.DeveloperEvaluation.WebApi.Middleware;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.OpenApi.Models;
 using Serilog;
 using StackExchange.Redis;
 
@@ -36,37 +37,37 @@ public class Program
             builder.AddBasicHealthChecks();
             builder.Services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo { Title = "Ambev API", Version = "v1" });
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "Ambev API", Version = "v1" });
 
-                // Adiciona definição do esquema de segurança JWT
-                var securityScheme = new Microsoft.OpenApi.Models.OpenApiSecurityScheme
+                c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
                 {
                     Name = "Authorization",
-                    Type = Microsoft.OpenApi.Models.SecuritySchemeType.Http,
+                    Type = SecuritySchemeType.Http,
                     Scheme = "bearer",
                     BearerFormat = "JWT",
-                    In = Microsoft.OpenApi.Models.ParameterLocation.Header,
+                    In = ParameterLocation.Header,
                     Description = "Insira o token JWT como: Bearer {seu token}"
-                };
+                });
 
-                c.AddSecurityDefinition("Bearer", securityScheme);
-
-                // Requer token por padrão em todos os endpoints (exceto AllowAnonymous)
-                var securityRequirement = new Microsoft.OpenApi.Models.OpenApiSecurityRequirement
+                c.AddSecurityRequirement(new OpenApiSecurityRequirement
     {
         {
-            securityScheme,
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference
+                {
+                    Type = ReferenceType.SecurityScheme,
+                    Id = "Bearer"
+                },
+                Scheme = "bearer",
+                Name = "Authorization",
+                In = ParameterLocation.Header
+            },
             Array.Empty<string>()
         }
-    };
-
-                c.AddSecurityRequirement(securityRequirement);
-
-                // Se você usa XML comments para documentação:
-                // var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
-                // var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
-                // c.IncludeXmlComments(xmlPath);
+    });
             });
+
 
             // Configure Database (PostgreSQL)
             builder.Services.AddDbContext<SqlContext>(options =>

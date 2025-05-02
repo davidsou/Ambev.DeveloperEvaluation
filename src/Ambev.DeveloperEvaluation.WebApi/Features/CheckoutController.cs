@@ -9,10 +9,10 @@ namespace Ambev.DeveloperEvaluation.WebApi.Features;
 [ApiController]
 public class CheckoutController(IMediator mediator) : BaseController(mediator)
 {
-    [HttpPost("checkout/{userId}")]
-    public async Task<IActionResult> Checkout(Guid userId)
+    [HttpGet()]
+    public async Task<IActionResult> Checkout()
     {
-        var result = await Mediator.Send(new CheckoutCart.Command(userId));
+        var result = await Mediator.Send(new CheckoutCart.Command());
         return FromResult(result);
     }
 }

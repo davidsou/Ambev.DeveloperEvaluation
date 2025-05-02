@@ -8,7 +8,7 @@ namespace Ambev.DeveloperEvaluation.Application.Products;
 
 public class UpdateProduct
 {
-    public record Command(int Id, CreateProductDto Product) : IRequest<OperationResult>;
+    public record Command(Guid Id, CreateProductDto Product) : IRequest<OperationResult>;
 
     public class Handler(IProductRepository repository, ILogger<Handler> logger)
         : BaseHandler(logger), IRequestHandler<Command, OperationResult>

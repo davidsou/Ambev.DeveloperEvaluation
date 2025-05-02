@@ -11,7 +11,7 @@ public class SqlBaseRepository<T>(DbContext context) : ISqlBaseRepository<T> whe
 {
     protected readonly DbSet<T> dbSet = context.Set<T>();
 
-    public async Task<T?> GetByIdAsync(int id) => await dbSet.FindAsync(id);
+    public async Task<T?> GetByIdAsync(Guid id) => await dbSet.FindAsync(id);
 
     public async Task<IEnumerable<T>> GetAllAsync() => await dbSet.Where(e => e.Active).ToListAsync();
 

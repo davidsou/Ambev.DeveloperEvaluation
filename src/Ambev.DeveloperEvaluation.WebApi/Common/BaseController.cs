@@ -1,10 +1,12 @@
 ﻿using Ambev.DeveloperEvaluation.Domain.Common;
+using Ambev.DeveloperEvaluation.WebApi.Filters;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 
 namespace Ambev.DeveloperEvaluation.WebApi.Common;
 
+[AuthorizeRoleAttribute(Domain.Enums.UserRole.Customer)]
 [Route("api/[controller]")]
 [ApiController]
 public class BaseController(IMediator mediator) : ControllerBase

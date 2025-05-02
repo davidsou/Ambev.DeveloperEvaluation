@@ -17,21 +17,21 @@ public class ProductController(IMediator mediator) : BaseController(mediator)
     }
 
     [HttpPut("{id}")]
-    public async Task<IActionResult> Update(int id, [FromBody] CreateProductDto dto)
+    public async Task<IActionResult> Update(Guid id, [FromBody] CreateProductDto dto)
     {
         var result = await Mediator.Send(new UpdateProduct.Command(id, dto));
         return FromResult(result);
     }
 
     [HttpDelete("{id}")]
-    public async Task<IActionResult> Delete(int id)
+    public async Task<IActionResult> Delete(Guid id)
     {
         var result = await Mediator.Send(new DeleteProduct.Command(id));
         return FromResult(result);
     }
 
     [HttpGet("{id}")]
-    public async Task<IActionResult> GetById(int id)
+    public async Task<IActionResult> GetById(Guid id)
     {
         var result = await Mediator.Send(new GetProductById.Query(id));
         return FromResult(result);

@@ -48,7 +48,7 @@ public class JwtTokenGenerator : IJwtTokenGenerator
         {
            new Claim(ClaimTypes.NameIdentifier, user.Id),
            new Claim(ClaimTypes.Name, user.Username),
-           new Claim(ClaimTypes.Role, user.Role.ToLowerInvariant())
+           new Claim(ClaimTypes.Role, user.Role.ToString())
        };
 
         var tokenDescriptor = new SecurityTokenDescriptor

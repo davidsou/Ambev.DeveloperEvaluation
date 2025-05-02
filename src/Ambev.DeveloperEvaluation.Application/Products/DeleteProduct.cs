@@ -7,7 +7,7 @@ namespace Ambev.DeveloperEvaluation.Application.Products;
 
 public class DeleteProduct
 {
-    public record Command(int Id) : IRequest<OperationResult>;
+    public record Command(Guid Id) : IRequest<OperationResult>;
 
     public class Handler(IProductRepository repository, ILogger<Handler> logger)
         : BaseHandler(logger), IRequestHandler<Command, OperationResult>
